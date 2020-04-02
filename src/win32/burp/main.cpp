@@ -53,6 +53,14 @@ int main(int argc, char *argv[])
 
 	InitWinAPIWrapper();
 
+	if((p_RtlSetProcessPlaceholderCompatibilityMode))
+   {
+      // Show 
+      if(p_RtlSetProcessPlaceholderCompatibilityMode(2)<0)
+      {
+         return 0;
+      }
+   }
 	// Start up Volume Shadow Copy.
 	if(VSSInit()) return 1;
 

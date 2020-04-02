@@ -542,6 +542,7 @@ static int found_directory(struct asfd *asfd,
 
 	if(ff_pkt->type==FT_REPARSE || ff_pkt->type==FT_JUNCTION)
 	{
+		printf("Ignoring Directory: %s b/c %d", ff_pkt->fname, ff_pkt->type);
 		// Ignore.
 		ret=0;
 		goto end;
@@ -643,7 +644,13 @@ static int find_files(struct asfd *asfd, struct FF_PKT *ff_pkt, struct conf **co
 	ff_pkt->link=fname;
 
 #ifdef HAVE_WIN32
-	if(win32_lstat(fname, &ff_pkt->statp, &ff_pkt->winattr))
+	int win_res = win32_lstat(fname, &ff_pkt->statp, &ff_pkt->winattr);
+	if(win_res == -2)
+	{
+		ff_pkt->type=FT_OFFLINE;
+		return 0;
+	}
+	if (win_res)
 #else
 	if(lstat(fname, &ff_pkt->statp))
 #endif

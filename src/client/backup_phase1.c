@@ -205,6 +205,8 @@ static int my_send_file(struct asfd *asfd, struct FF_PKT *ff, struct conf **conf
 			return ft_err(asfd, confs, ff, "Could not stat");
 		case FT_NOOPEN:
 			return ft_err(asfd, confs, ff, "Could not open directory");
+		case FT_OFFLINE:
+			return 0; //don't send offline files
 		default:
 			return logw(asfd, cntr,
 				"Err: Unknown file type %d: %s\n",

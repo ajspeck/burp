@@ -175,6 +175,11 @@ void InitWinAPIWrapper();
 typedef BOOL (WINAPI * t_SHGetFolderPath)(HWND, int, HANDLE, DWORD, LPTSTR);
 extern t_SHGetFolderPath  DLL_IMP_EXP p_SHGetFolderPath;
 
+/* In SHFolder.dll on older systems, and now ntdll.dll */
+typedef char (WINAPI * t_RtlSetProcessPlaceholderCompatibilityMode )(char);
+extern t_RtlSetProcessPlaceholderCompatibilityMode  DLL_IMP_EXP p_RtlSetProcessPlaceholderCompatibilityMode;
+
+
 #endif
 
 #endif /* __WINAPI_H */

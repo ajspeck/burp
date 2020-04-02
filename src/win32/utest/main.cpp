@@ -33,9 +33,9 @@
 #include <signal.h>
 
 #undef  _WIN32_IE
-#define _WIN32_IE 0x0501
+#define _WIN32_IE _WIN32_IE_IE60 
 #undef  _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
+#define _WIN32_WINNT _WIN32_WINNT_WIN10  
 #include <commctrl.h>
 
 #include <vss.h>

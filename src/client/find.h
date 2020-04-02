@@ -62,7 +62,7 @@
 #define FT_FIFO		17  // Raw fifo device.
 #define FT_REPARSE	21  // Win NTFS reparse point.
 #define FT_JUNCTION	26  // Win32 Junction point.
-
+#define FT_OFFLINE 27 // offline file
 /*
  * Definition of the find_files packet passed as the
  * first argument to the find_files callback subroutine.

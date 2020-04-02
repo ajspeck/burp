@@ -56,10 +56,6 @@ $(DIRS):
 	  && ! test -h $${TOOLSDIR}/burp-cross-tools ; do \
 		TOOLSDIR=`dirname $${TOOLSDIR}` ; \
 		echo $${TOOLSDIR} ; \
-		if test $${TOOLSDIR} = '/' -o $${TOOLSDIR} = '.' ; then \
-			echo "\nCould not find burp-cross-tools." ; \
-			exit 1 ; \
-		fi ; \
 	done ; \
 	ln -vsf $${TOOLSDIR}/burp-cross-tools/cross-tools ../../burp-cross-tools ; \
 	ln -vsf $${TOOLSDIR}/burp-cross-tools/depkgs ../../burp-depkgs

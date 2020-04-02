@@ -89,6 +89,8 @@ t_SHGetFolderPath       p_SHGetFolderPath=NULL;
 
 t_CreateProcessW        p_CreateProcessW=NULL;
 
+t_RtlSetProcessPlaceholderCompatibilityMode p_RtlSetProcessPlaceholderCompatibilityMode=NULL;
+
 void InitWinAPIWrapper()
 {
 	OSVERSIONINFO osversioninfo={ sizeof(OSVERSIONINFO) };
@@ -206,5 +208,13 @@ void InitWinAPIWrapper()
 			p_SHGetFolderPath=(t_SHGetFolderPath)
 				GetProcAddress(hLib, "SHGetFolderPathA");
 	}
+
+	hLib=LoadLibraryA("NTDLL.DLL");
+	if(hLib)
+	{
+		p_RtlSetProcessPlaceholderCompatibilityMode=(t_RtlSetProcessPlaceholderCompatibilityMode)
+			GetProcAddress(hLib, "RtlSetProcessPlaceholderCompatibilityMode");
+	}
+
 	atexit(Win32ConvCleanupCache);
 }

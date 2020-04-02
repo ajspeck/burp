@@ -616,6 +616,8 @@ static const char *errorString(void)
 	return rval;
 }
 
+#define IsReparseTagNameSurrogate(_tag) (((_tag) & 0x20000000))
+
 // Explicitly open the file to read the reparse point, then call
 // DeviceIoControl to find out if it points to a volume or to a directory.
 static void reparse_or_mount_song_and_dance(
@@ -657,7 +659,9 @@ static void reparse_or_mount_song_and_dance(
 
 	wchar_2_UTF8(utf8,
 		(wchar_t *)rdb->SymbolicLinkReparseBuffer.PathBuffer);
-	if(!strncasecmp(utf8, "\\??\\volume{", 11))
+	if (!IsReparseTagNameSurrogate(rdb->ReparseTag))
+		sb->st_rdev=0; //not a symbolic link reparse point
+	else if(!strncasecmp(utf8, "\\??\\volume{", 11))
 		sb->st_rdev=WIN32_MOUNT_POINT;
 	else // Points to a directory so we ignore it.
 		sb->st_rdev=WIN32_JUNCTION_POINT;
@@ -807,7 +811,12 @@ static int do_fstat(intptr_t fd, struct stat *sb, uint64_t *winattr)
 	// Use st_rdev to store reparse attribute.
 	if(info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
 		sb->st_rdev=WIN32_REPARSE_POINT;
-
+	printf("File attributes: %lu", info.dwFileAttributes);
+	if (info.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE)
+	{
+		printf("File is offline.\n");
+		return -1;
+	}
 	sb->st_size=info.nFileSizeHigh;
 	sb->st_size<<=32;
 	sb->st_size|=info.nFileSizeLow;
@@ -930,7 +939,11 @@ static int do_stat(const char *file, struct stat *sb, uint64_t *winattr)
 	sb->st_atime=cvt_ftime_to_utime(data.ftLastAccessTime);
 	sb->st_mtime=cvt_ftime_to_utime(data.ftLastWriteTime);
 	sb->st_ctime=cvt_ftime_to_utime(data.ftCreationTime);
-
+	if (data.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE)
+	{
+		printf("File %s is offline.\n", file);
+		return -2;
+	}
 	/* If we are not at the root, then to distinguish a reparse
 	   point from a mount point, we must call FindFirstFile() to
 	   get the WIN32_FIND_DATA, which has the bit that indicates
